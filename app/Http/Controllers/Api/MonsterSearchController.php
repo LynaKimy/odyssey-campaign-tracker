@@ -22,6 +22,14 @@ class MonsterSearchController extends Controller
             ->limit(10)
             ->get(['id', 'name', 'challenge_rating', 'armor_class', 'hit_points', 'type', 'size']);
 
-        return response()->json($monsters);
+        return response()->json($monsters->map(fn (Monster $m) => [
+            'id' => $m->id,
+            'name' => $m->name,
+            'challenge_rating' => $m->challenge_rating,
+            'armor_class' => $m->armor_class,
+            'hit_points' => $m->hit_points,
+            'type' => $m->type,
+            'size' => $m->size,
+        ]));
     }
 }

@@ -17,29 +17,31 @@ use Illuminate\Database\Eloquent\Builder;
 trait HasTranslatableScopes
 {
     /**
-     * Filter by a translatable column value using the current locale
+     * Filter by a translatable column value using the current locale with fallback
      */
     public function scopeWhereTranslation(Builder $query, string $column, string $value): Builder
     {
         $locale = app()->getLocale();
+        $fallback = $this->getFallbackLocale();
 
         return $query->whereRaw(
-            "JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?)) LIKE ?",
-            ['$."' . $locale . '"', $value]
+            "LOWER(COALESCE(JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?)), JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?)))) LIKE LOWER(?)",
+            ['$."' . $locale . '"', '$."' . $fallback . '"', $value]
         );
     }
 
     /**
-     * Order by a translatable column using the current locale
+     * Order by a translatable column using the current locale with fallback
      */
     public function scopeOrderByTranslation(Builder $query, string $column, string $direction = 'asc'): Builder
     {
         $locale = app()->getLocale();
+        $fallback = $this->getFallbackLocale();
         $direction = strtolower($direction) === 'desc' ? 'DESC' : 'ASC';
 
         return $query->orderByRaw(
-            "JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?)) {$direction}",
-            ['$."' . $locale . '"']
+            "COALESCE(JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?)), JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, ?))) {$direction}",
+            ['$."' . $locale . '"', '$."' . $fallback . '"']
         );
     }
 }
