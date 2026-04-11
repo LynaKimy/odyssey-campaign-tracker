@@ -21,8 +21,9 @@ Route::post('/deploy', function (Request $request) {
     )) {
         abort(403);
     }
-    $ref = $request->input('ref', '');
-    if (!str_starts_with($ref, 'refs/tags/')) {
+
+    $refType = $request->input('ref_type', '');
+    if ($refType !== 'tag') {
         return response()->json(['message' => 'Not a tag, skipping']);
     }
 
