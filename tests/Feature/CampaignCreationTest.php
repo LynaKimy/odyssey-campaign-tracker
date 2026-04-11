@@ -59,7 +59,7 @@ class CampaignCreationTest extends TestCase
 
         $this->assertDatabaseHas('campaign_user', [
             'user_id' => $user->id,
-            'role' => CampaignRole::MJ->value,
+            'role' => CampaignRole::GM->value,
         ]);
     }
 

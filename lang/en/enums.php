@@ -2,8 +2,8 @@
 
 return [
     'campaign_role' => [
-        'mj' => 'Game Master',
-        'joueur' => 'Player',
+        'gm' => 'Game Master',
+        'player' => 'Player',
     ],
     'game_system' => [
         'dnd5e-2024' => 'D&D 2024',

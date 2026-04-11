@@ -16,7 +16,7 @@ class NpcCreationTest extends TestCase
     {
         $mj = User::factory()->create();
         $campaign = Campaign::factory()->create(['created_by' => $mj->id]);
-        $campaign->members()->attach($mj->id, ['role' => CampaignRole::MJ->value]);
+        $campaign->members()->attach($mj->id, ['role' => CampaignRole::GM->value]);
 
         return [$campaign, $mj];
     }
@@ -34,7 +34,7 @@ class NpcCreationTest extends TestCase
     {
         [$campaign, $mj] = $this->createCampaignWithMj();
         $joueur = User::factory()->create();
-        $campaign->members()->attach($joueur->id, ['role' => CampaignRole::Joueur->value]);
+        $campaign->members()->attach($joueur->id, ['role' => CampaignRole::Player->value]);
 
         $response = $this->actingAs($joueur)->get(route('campaigns.npcs.create', $campaign));
 

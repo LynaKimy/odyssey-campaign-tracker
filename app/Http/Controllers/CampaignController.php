@@ -41,7 +41,7 @@ class CampaignController extends Controller
         ]);
 
         $campaign->members()->attach($request->user()->id, [
-            'role' => CampaignRole::MJ->value,
+            'role' => CampaignRole::GM->value,
         ]);
 
         return redirect()

@@ -9,13 +9,13 @@ namespace App\Enums;
  * A user may hold different roles across different campaigns.
  *
  * @example
- * $user->roleInCampaign($campaign) === CampaignRole::MJ;
- * CampaignRole::MJ->label(); // "Maître du Jeu"
+ * $user->roleInCampaign($campaign) === CampaignRole::GM;
+ * CampaignRole::GM->label(); // "Maître du Jeu"
  */
 enum CampaignRole: string
 {
-    case MJ = 'mj';
-    case Joueur = 'joueur';
+    case GM = 'gm';
+    case Player = 'player';
 
     public function label(): string
     {

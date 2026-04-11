@@ -50,36 +50,36 @@ Route::middleware('auth')->group(function () {
 
     // Campaign member management
     Route::post('/campaigns/{campaign}/members', [CampaignMemberController::class, 'store'])
-        ->middleware('campaign.role:mj')
+        ->middleware('campaign.role:gm')
         ->name('campaigns.members.store');
 
     Route::delete('/campaigns/{campaign}/members/{user}', [CampaignMemberController::class, 'destroy'])
-        ->middleware('campaign.role:mj')
+        ->middleware('campaign.role:gm')
         ->name('campaigns.members.destroy');
 
     Route::delete('/campaigns/{campaign}/leave', [CampaignMemberController::class, 'leave'])
         ->name('campaigns.leave');
 
-    // Character creation (MJ + Joueur)
+    // Character creation (gm + player)
     Route::get('/campaigns/{campaign}/characters/create', [CharacterController::class, 'create'])
-        ->middleware('campaign.role:mj,joueur')
+        ->middleware('campaign.role:gm,player')
         ->name('campaigns.characters.create');
 
     Route::post('/campaigns/{campaign}/characters', [CharacterController::class, 'store'])
-        ->middleware('campaign.role:mj,joueur')
+        ->middleware('campaign.role:gm,player')
         ->name('campaigns.characters.store');
 
     Route::get('/campaigns/{campaign}/characters/{character}', [CharacterController::class, 'show'])
-        ->middleware('campaign.role:mj,joueur')
+        ->middleware('campaign.role:gm,player')
         ->name('campaigns.characters.show');
 
-    // NPC creation (MJ only)
+    // NPC creation (gm only)
     Route::get('/campaigns/{campaign}/npcs/create', [NpcController::class, 'create'])
-        ->middleware('campaign.role:mj')
+        ->middleware('campaign.role:gm')
         ->name('campaigns.npcs.create');
 
     Route::post('/campaigns/{campaign}/npcs', [NpcController::class, 'store'])
-        ->middleware('campaign.role:mj')
+        ->middleware('campaign.role:gm')
         ->name('campaigns.npcs.store');
 });
 

@@ -64,19 +64,19 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function campaignsAsMj(): BelongsToMany
+    public function campaignsAsGM(): BelongsToMany
     {
         return $this->belongsToMany(Campaign::class)
             ->withPivot('role')
-            ->wherePivot('role', CampaignRole::MJ->value)
+            ->wherePivot('role', CampaignRole::GM->value)
             ->withTimestamps();
     }
 
-    public function campaignsAsJoueur(): BelongsToMany
+    public function campaignsAsPlayer(): BelongsToMany
     {
         return $this->belongsToMany(Campaign::class)
             ->withPivot('role')
-            ->wherePivot('role', CampaignRole::Joueur->value)
+            ->wherePivot('role', CampaignRole::Player->value)
             ->withTimestamps();
     }
 
@@ -109,12 +109,12 @@ class User extends Authenticatable
 
     public function isGM(Campaign $campaign): bool
     {
-        return $this->roleInCampaign($campaign) === CampaignRole::MJ;
+        return $this->roleInCampaign($campaign) === CampaignRole::GM;
     }
 
     public function isPlayer(Campaign $campaign): bool
     {
-        return $this->roleInCampaign($campaign) === CampaignRole::Joueur;
+        return $this->roleInCampaign($campaign) === CampaignRole::Player;
     }
 
     public function isMemberOf(Campaign $campaign): bool

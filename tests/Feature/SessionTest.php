@@ -22,7 +22,7 @@ class SessionTest extends TestCase
     {
         $mj = User::factory()->create();
         $campaign = Campaign::factory()->create(['created_by' => $mj->id]);
-        $campaign->members()->attach($mj->id, ['role' => CampaignRole::MJ->value]);
+        $campaign->members()->attach($mj->id, ['role' => CampaignRole::GM->value]);
 
         return [$campaign, $mj];
     }
@@ -30,7 +30,7 @@ class SessionTest extends TestCase
     private function addJoueur(Campaign $campaign): User
     {
         $joueur = User::factory()->create();
-        $campaign->members()->attach($joueur->id, ['role' => CampaignRole::Joueur->value]);
+        $campaign->members()->attach($joueur->id, ['role' => CampaignRole::Player->value]);
 
         return $joueur;
     }

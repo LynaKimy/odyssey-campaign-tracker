@@ -50,15 +50,15 @@ class Campaign extends Model
     {
         return $this->belongsToMany(User::class)
             ->withPivot('role')
-            ->wherePivot('role', CampaignRole::MJ->value)
+            ->wherePivot('role', CampaignRole::GM->value)
             ->withTimestamps();
     }
 
-    public function joueurs(): BelongsToMany
+    public function players(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->withPivot('role')
-            ->wherePivot('role', CampaignRole::Joueur->value)
+            ->wherePivot('role', CampaignRole::Player->value)
             ->withTimestamps();
     }
 
