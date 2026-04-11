@@ -61,20 +61,28 @@ class TranslateReferenceDataCommand extends Command
             $higherLevels = $spells->map(fn ($s) => $s->getTranslation('higher_level', 'en'))->toArray();
 
             $translatedNames = $deepl->translateBatch($names, $locale);
-            $translatedDescs = $deepl->translateBatch($descs, $locale);
+
+            $nonNullDescs = array_filter($descs, fn ($v) => $v !== null && $v !== '');
+            $translatedDescResults = ! empty($nonNullDescs)
+                ? $deepl->translateBatch(array_values($nonNullDescs), $locale)
+                : [];
 
             $nonNullHigher = array_filter($higherLevels, fn ($v) => $v !== null);
             $translatedHigher = ! empty($nonNullHigher)
                 ? $deepl->translateBatch(array_values($nonNullHigher), $locale)
                 : [];
 
+            $descIndex = 0;
             $higherIndex = 0;
 
             foreach ($spells as $i => $spell) {
                 $spell->setTranslation('name', $locale, $translatedNames[$i]);
-                $spell->setTranslation('desc', $locale, $translatedDescs[$i]);
 
-                if ($spell->getTranslation('higher_level', 'en') !== null) {
+                if ($descs[$i] !== null && $descs[$i] !== '') {
+                    $spell->setTranslation('desc', $locale, $translatedDescResults[$descIndex++]);
+                }
+
+                if ($higherLevels[$i] !== null) {
                     $spell->setTranslation('higher_level', $locale, $translatedHigher[$higherIndex++]);
                 }
 
@@ -125,60 +133,87 @@ class TranslateReferenceDataCommand extends Command
 
     /**
      * Translate a single monster's displayable fields using Spatie translatable
+     *
+     * @description Collects all translatable texts into a single batch call,
+     * then rebuilds structured fields preserving non-translatable metadata.
      */
     private function translateMonster(DeepLClient $deepl, Monster $monster, string $locale): void
     {
-        $textsToTranslate = [$monster->getTranslation('name', 'en')];
-        $map = [['type' => 'name', 'index' => 0]];
+        $textsToTranslate = [];
+        $map = [];
 
-        // Collect trait names and descriptions
-        $traits = $monster->getTranslation('traits', 'en') ?? [];
-        foreach ($traits as $trait) {
-            $map[] = ['type' => 'trait_name', 'index' => count($textsToTranslate)];
-            $textsToTranslate[] = $trait['name'];
-            $map[] = ['type' => 'trait_desc', 'index' => count($textsToTranslate)];
-            $textsToTranslate[] = $trait['desc'];
+        // Collect name
+        $enName = $monster->getTranslation('name', 'en');
+
+        if ($enName === null) {
+            return;
         }
 
-        // Collect action names and descriptions
-        $actions = $monster->getTranslation('actions', 'en') ?? [];
-        foreach ($actions as $action) {
-            $map[] = ['type' => 'action_name', 'index' => count($textsToTranslate)];
-            $textsToTranslate[] = $action['name'];
-            $map[] = ['type' => 'action_desc', 'index' => count($textsToTranslate)];
-            $textsToTranslate[] = $action['desc'];
+        $map[] = ['type' => 'name', 'index' => count($textsToTranslate)];
+        $textsToTranslate[] = $enName;
+
+        // Collect desc
+        $enDesc = $monster->getTranslation('desc', 'en');
+
+        if ($enDesc !== null && $enDesc !== '') {
+            $map[] = ['type' => 'desc', 'index' => count($textsToTranslate)];
+            $textsToTranslate[] = $enDesc;
+        }
+
+        // Collect all action-like groups (traits, actions, legendary_actions, etc.)
+        $actionGroups = [
+            'traits' => $monster->getTranslation('traits', 'en') ?? [],
+            'actions' => $monster->getTranslation('actions', 'en') ?? [],
+            'legendary_actions' => $monster->getTranslation('legendary_actions', 'en') ?? [],
+            'reactions' => $monster->getTranslation('reactions', 'en') ?? [],
+            'bonus_actions' => $monster->getTranslation('bonus_actions', 'en') ?? [],
+            'special_abilities' => $monster->getTranslation('special_abilities', 'en') ?? [],
+        ];
+
+        foreach ($actionGroups as $groupKey => $items) {
+            foreach ($items as $itemIndex => $item) {
+                if (! empty($item['name'])) {
+                    $map[] = ['type' => $groupKey, 'item' => $itemIndex, 'field' => 'name', 'index' => count($textsToTranslate)];
+                    $textsToTranslate[] = $item['name'];
+                }
+
+                if (! empty($item['desc'])) {
+                    $map[] = ['type' => $groupKey, 'item' => $itemIndex, 'field' => 'desc', 'index' => count($textsToTranslate)];
+                    $textsToTranslate[] = $item['desc'];
+                }
+            }
+        }
+
+        if (empty($textsToTranslate)) {
+            return;
         }
 
         // Single batch call for all texts of this monster
         $translated = $deepl->translateBatch($textsToTranslate, $locale);
 
-        // Set translated name
-        $monster->setTranslation('name', $locale, $translated[0]);
+        // Rebuild translated groups starting from EN copies to preserve metadata
+        $translatedGroups = [];
 
-        // Rebuild translated traits
-        $translatedTraits = [];
-        $traitIndex = 0;
-        $translatedActions = [];
-        $actionIndex = 0;
+        foreach ($actionGroups as $groupKey => $items) {
+            if (! empty($items)) {
+                $translatedGroups[$groupKey] = $items;
+            }
+        }
 
         foreach ($map as $entry) {
             $value = $translated[$entry['index']];
 
-            match ($entry['type']) {
-                'trait_name' => $translatedTraits[$traitIndex]['name'] = $value,
-                'trait_desc' => $translatedTraits[$traitIndex++]['desc'] = $value,
-                'action_name' => $translatedActions[$actionIndex]['name'] = $value,
-                'action_desc' => $translatedActions[$actionIndex++]['desc'] = $value,
-                default => null,
-            };
+            if ($entry['type'] === 'name') {
+                $monster->setTranslation('name', $locale, $value);
+            } elseif ($entry['type'] === 'desc') {
+                $monster->setTranslation('desc', $locale, $value);
+            } else {
+                $translatedGroups[$entry['type']][$entry['item']][$entry['field']] = $value;
+            }
         }
 
-        if (! empty($translatedTraits)) {
-            $monster->setTranslation('traits', $locale, $translatedTraits);
-        }
-
-        if (! empty($translatedActions)) {
-            $monster->setTranslation('actions', $locale, $translatedActions);
+        foreach ($translatedGroups as $groupKey => $items) {
+            $monster->setTranslation($groupKey, $locale, array_values($items));
         }
 
         $monster->save();
