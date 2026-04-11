@@ -123,4 +123,13 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Deploy script
+    |--------------------------------------------------------------------------
+    */
+    'deploy_secret' => env('DEPLOY_SECRET'),
+    'deploy_script' => env('DEPLOY_SCRIPT'),
+    'deploy_log'    => env('DEPLOY_LOG'),
+
 ];
