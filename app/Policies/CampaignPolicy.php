@@ -52,22 +52,22 @@ class CampaignPolicy
 
     public function update(User $user, Campaign $campaign): bool
     {
-        return $user->isMj($campaign);
+        return $user->isGM($campaign);
     }
 
     public function delete(User $user, Campaign $campaign): bool
     {
-        return $user->isMj($campaign);
+        return $user->isGM($campaign);
     }
 
     public function invite(User $user, Campaign $campaign): bool
     {
-        return $user->isMj($campaign);
+        return $user->isGM($campaign);
     }
 
     public function removePlayer(User $user, Campaign $campaign): bool
     {
-        return $user->isMj($campaign);
+        return $user->isGM($campaign);
     }
 
     /**
@@ -75,6 +75,6 @@ class CampaignPolicy
      */
     public function leave(User $user, Campaign $campaign): bool
     {
-        return $user->isJoueur($campaign);
+        return $user->isPlayer($campaign);
     }
 }

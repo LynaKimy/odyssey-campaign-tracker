@@ -107,12 +107,12 @@ class User extends Authenticatable
         return $membership ? CampaignRole::from($membership->pivot->role) : null;
     }
 
-    public function isMj(Campaign $campaign): bool
+    public function isGM(Campaign $campaign): bool
     {
         return $this->roleInCampaign($campaign) === CampaignRole::MJ;
     }
 
-    public function isJoueur(Campaign $campaign): bool
+    public function isPlayer(Campaign $campaign): bool
     {
         return $this->roleInCampaign($campaign) === CampaignRole::Joueur;
     }

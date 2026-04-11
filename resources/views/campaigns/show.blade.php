@@ -47,7 +47,7 @@
                             </span>
                         </div>
                         @auth
-                            @if(auth()->user()->isMj($campaign) && $member->id !== $campaign->created_by && $member->id !== auth()->id())
+                            @if(auth()->user()->isGM($campaign) && $member->id !== $campaign->created_by && $member->id !== auth()->id())
                                 <form method="POST" action="{{ route('campaigns.members.destroy', [$campaign, $member]) }}">
                                     @csrf
                                     @method('DELETE')
@@ -64,7 +64,7 @@
 
             @auth
                 {{-- Invite form (MJ only) --}}
-                @if(auth()->user()->isMj($campaign))
+                @if(auth()->user()->isGM($campaign))
                     <div class="meander my-4"></div>
                     <h3 class="text-sm font-medium mb-3" style="font-family: var(--font-heading); color: var(--color-bronze); text-transform: uppercase; letter-spacing: 0.06em;">
                         {{ __('campaign.invite_member') }}
@@ -115,7 +115,7 @@
             @forelse($campaign->characters as $character)
                 <div class="mb-3 pb-3" style="border-bottom: 1px solid var(--color-border);">
                     @auth
-                        @if(auth()->user()->isMj($campaign) || $character->user_id === auth()->id())
+                        @if(auth()->user()->isGM($campaign) || $character->user_id === auth()->id())
                             <a href="{{ route('campaigns.characters.show', [$campaign, $character]) }}" class="font-medium hover:underline" style="font-family: var(--font-heading); color: var(--color-text);">{{ $character->name }}</a>
                         @else
                             <div class="font-medium" style="font-family: var(--font-heading); color: var(--color-text);">{{ $character->name }}</div>
@@ -155,7 +155,7 @@
                 <p class="text-sm italic" style="color: var(--color-text-muted);">{{ __('ui.no_results') }}</p>
             @endforelse
             @auth
-                @if(auth()->user()->isMj($campaign))
+                @if(auth()->user()->isGM($campaign))
                     <div class="mt-4">
                         <a href="{{ route('campaigns.npcs.create', $campaign) }}" class="btn btn-primary text-sm w-full text-center block">
                             {{ __('character.create_npc') }}

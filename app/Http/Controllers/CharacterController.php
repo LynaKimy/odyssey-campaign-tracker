@@ -23,14 +23,14 @@ class CharacterController extends Controller
         return view('characters.create', [
             'campaign' => $campaign,
             'members' => $campaign->members,
-            'isMj' => auth()->user()->isMj($campaign),
+            'isGM' => auth()->user()->isGM($campaign),
         ]);
     }
 
     public function store(StoreCharacterRequest $request, Campaign $campaign): RedirectResponse
     {
         // Joueurs can only create characters for themselves
-        $userId = $request->user()->isMj($campaign)
+        $userId = $request->user()->isGM($campaign)
             ? $request->validated('user_id')
             : $request->user()->id;
 
@@ -61,7 +61,7 @@ class CharacterController extends Controller
         // Only the owner or a campaign MJ can view the character details
         $user = auth()->user();
 
-        if ($character->user_id !== $user->id && ! $user->isMj($campaign)) {
+        if ($character->user_id !== $user->id && ! $user->isGM($campaign)) {
             abort(403);
         }
 

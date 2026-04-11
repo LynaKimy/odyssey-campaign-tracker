@@ -54,7 +54,7 @@ class CampaignController extends Controller
         $campaign->load('creator', 'members', 'characters', 'npcs');
 
         // Eager-load campaigns for the authenticated user so that
-        // isMj() / isMemberOf() calls in the view don't trigger N+1
+        // isGM() / isMemberOf() calls in the view don't trigger N+1
         auth()->user()?->load('campaigns');
 
         return view('campaigns.show', compact('campaign'));

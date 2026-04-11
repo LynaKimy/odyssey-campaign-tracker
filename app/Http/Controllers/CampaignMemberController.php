@@ -41,7 +41,7 @@ class CampaignMemberController extends Controller
         }
 
         // Prevent removing the last MJ
-        if ($user->isMj($campaign) && $campaign->mjs()->count() <= 1) {
+        if ($user->isGM($campaign) && $campaign->mjs()->count() <= 1) {
             return back()->with('error', __('campaign.cannot_remove_last_mj'));
         }
 
@@ -62,7 +62,7 @@ class CampaignMemberController extends Controller
         }
 
         // Prevent the last MJ from leaving
-        if ($user->isMj($campaign) && $campaign->mjs()->count() <= 1) {
+        if ($user->isGM($campaign) && $campaign->mjs()->count() <= 1) {
             return back()->with('error', __('campaign.cannot_remove_last_mj'));
         }
 

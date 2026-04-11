@@ -13,7 +13,7 @@
                 @csrf
 
                 {{-- Owner (MJ: dropdown, Joueur: hidden) --}}
-                @if($isMj)
+                @if($isGM)
                     <div class="mb-5">
                         <label for="user_id" class="stat-label block mb-1">{{ __('character.owner') }}</label>
                         <select id="user_id" name="user_id" class="w-full">
