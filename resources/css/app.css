@@ -1,0 +1,285 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-heading: 'Cinzel', ui-serif, Georgia, serif;
+
+    --color-body: #12121a;
+    --color-panel: #1c1c28;
+    --color-input: #242434;
+    --color-border: #38342e;
+    --color-text: #efe6d6;
+    --color-text-secondary: #d5cab6;
+    --color-text-muted: #b8a890;
+    --color-bronze: #d4b05c;
+    --color-bronze-dark: #9a7e3a;
+    --color-bronze-dim: rgba(212, 176, 92, 0.28);
+    --color-bronze-glow: rgba(212, 176, 92, 0.15);
+    --color-red-accent: #d45050;
+    --color-blue-accent: #2d8cf0;
+    --color-purple-accent: #8b3ecf;
+}
+
+/* Base */
+body {
+    background-color: var(--color-body);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    letter-spacing: 0.08em;
+}
+
+h1 {
+    text-shadow: 0 0 30px var(--color-bronze-glow);
+}
+
+/* Greek meander divider */
+.meander {
+    height: 12px;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12' viewBox='0 0 40 12'%3E%3Cpath d='M0 6h8v-6h4v10h-8v-4h-4z M12 6h8v-6h4v10h-8v-4h-4z M24 6h8v-6h4v10h-8v-4h-4z' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+}
+
+/* Panel (card-like container) */
+.panel {
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+
+.panel:hover {
+    border-color: var(--color-bronze-dim);
+}
+
+.panel-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--color-bronze-dim);
+    padding-bottom: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+/* Stat block (ability scores, AC/HP) */
+.stat-block {
+    background: rgba(212, 176, 92, 0.08);
+    border: 1px solid var(--color-bronze-dim);
+    border-radius: 4px;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.stat-label {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+}
+
+.stat-value {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* Buttons */
+.btn {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-input);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+.btn:hover {
+    border-color: var(--color-bronze-dim);
+    background: rgba(201, 168, 76, 0.08);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-bronze), var(--color-bronze-dark));
+    border-color: var(--color-bronze);
+    color: var(--color-body);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 12px var(--color-bronze-glow);
+}
+
+/* Badge / Tag */
+.badge {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--color-bronze-dim);
+    color: var(--color-bronze);
+    background: rgba(201, 168, 76, 0.08);
+}
+
+.badge-red {
+    border-color: rgba(212, 80, 80, 0.3);
+    color: #e87070;
+    background: rgba(212, 80, 80, 0.1);
+}
+
+.badge-blue {
+    border-color: rgba(45, 140, 240, 0.3);
+    color: #7ec8f0;
+    background: rgba(45, 140, 240, 0.1);
+}
+
+.badge-purple {
+    border-color: rgba(139, 62, 207, 0.3);
+    color: #c89ef0;
+    background: rgba(139, 62, 207, 0.1);
+}
+
+.badge-green {
+    border-color: rgba(76, 175, 80, 0.3);
+    color: #81c784;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+/* Form inputs */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    background: var(--color-input);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    border-radius: 4px;
+    padding: 0.55rem 0.75rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-bronze);
+    box-shadow: 0 0 0 2px var(--color-bronze-glow);
+    outline: none;
+}
+
+/* Nav link */
+.nav-link {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    transition: color 0.25s;
+}
+
+.nav-link:hover {
+    color: var(--color-text);
+}
+
+.nav-link-active {
+    color: var(--color-bronze);
+}
+
+/* Corner decoration */
+.corner-decor {
+    position: relative;
+}
+
+.corner-decor::before,
+.corner-decor::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--color-bronze-dim);
+    pointer-events: none;
+}
+
+.corner-decor::before {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+}
+
+.corner-decor::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+}
+
+/* Star ornament */
+.ornament::before {
+    content: '✦';
+    color: var(--color-bronze);
+    opacity: 0.5;
+    margin-right: 0.5rem;
+}
+
+/* Section title with meander underline */
+.section-title {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-bronze-dim);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-body);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.4);
+}
+
+/* Pagination override */
+nav[role="navigation"] span,
+nav[role="navigation"] a {
+    font-family: var(--font-heading) !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.04em;
+}
