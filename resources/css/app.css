@@ -5,6 +5,12 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* Base root font-size bumped from 16px to 18px (+12.5%) to improve global readability.
+   All rem-based sizes across the stylesheet scale proportionally. */
+html {
+    font-size: 112.5%;
+}
+
 @theme {
     --font-sans: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
     --font-heading: 'Cinzel', ui-serif, Georgia, serif;
@@ -282,4 +288,47 @@ nav[role="navigation"] a {
     font-family: var(--font-heading) !important;
     font-size: 0.8rem !important;
     letter-spacing: 0.04em;
+}
+
+/* TinyMCE wrapper (matches the look of native form inputs) */
+.tox.tox-tinymce {
+    border: 1px solid var(--color-border) !important;
+    border-radius: 4px !important;
+    background: var(--color-input);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.tox.tox-tinymce:focus-within {
+    border-color: var(--color-bronze) !important;
+    box-shadow: 0 0 0 2px var(--color-bronze-glow);
+}
+
+.tox .tox-editor-header,
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar-overlord {
+    background: var(--color-panel) !important;
+    border-bottom: 1px solid var(--color-bronze-dim) !important;
+}
+
+.tox .tox-tbtn {
+    color: var(--color-text) !important;
+}
+
+.tox .tox-tbtn svg {
+    fill: var(--color-text-muted) !important;
+}
+
+.tox .tox-tbtn:hover {
+    background: rgba(212, 176, 92, 0.08) !important;
+}
+
+.tox .tox-tbtn:hover svg,
+.tox .tox-tbtn--enabled svg {
+    fill: var(--color-bronze) !important;
+}
+
+.tox .tox-tbtn--enabled,
+.tox .tox-tbtn--enabled:hover {
+    background: rgba(212, 176, 92, 0.12) !important;
 }
