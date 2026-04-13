@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\GameSystem;
+use App\Services\Purifier;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,5 +26,12 @@ class StoreCampaignRequest extends FormRequest
             'system' => ['required', 'string', Rule::enum(GameSystem::class)],
             'is_public' => ['boolean'],
         ];
+    }
+
+    public function passedValidation() {
+        $purifier = new Purifier();
+        $this->merge([
+            'description' => $purifier->clean($this->input('description'))
+        ]);
     }
 }

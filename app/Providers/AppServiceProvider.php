@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Services\DeepLClient;
+use App\Services\Purifier;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
                 baseUrl: config('services.deepl.base_url', 'https://api-free.deepl.com/v2'),
             );
         });
+
+        $this->app->singleton(Purifier::class, function () {
+            return new Purifier();
+        });
+
     }
 
     /**

@@ -18,7 +18,7 @@
                     <span class="badge">{{ $campaign->system->label() }}</span>
                 @endif
                 @if($campaign->description)
-                    <p class="text-sm italic mt-3 line-clamp-2" style="color: var(--color-text-muted);">{{ $campaign->description }}</p>
+                    <p class="text-sm italic mt-3 line-clamp-2" style="color: var(--color-text-muted);">{!! $campaign->description !!}</p>
                 @endif
                 <div class="flex items-center justify-between mt-4 text-xs" style="color: var(--color-text-muted);">
                     <span>{{ __('campaign.created_by') }} {{ $campaign->creator->name }}</span>

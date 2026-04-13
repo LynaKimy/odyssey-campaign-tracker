@@ -29,7 +29,7 @@
         <div class="meander mb-4"></div>
 
         @if($campaign->description)
-            <p class="leading-relaxed" style="color: var(--color-text-muted);">{{ $campaign->description }}</p>
+            <p class="leading-relaxed" style="color: var(--color-text-muted);">{!! $campaign->description !!}</p>
         @endif
     </div>
 

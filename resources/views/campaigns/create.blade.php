@@ -36,7 +36,7 @@
                         id="description"
                         name="description"
                         rows="4"
-                        class="w-full"
+                        class="w-full tinymce"
                     >{{ old('description') }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm" style="color: var(--color-red-accent);">{{ $message }}</p>
@@ -83,4 +83,5 @@
             </form>
         </div>
     </div>
+
 @endsection
