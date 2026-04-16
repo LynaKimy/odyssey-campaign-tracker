@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\GameSystem;
+use App\Enums\Monsters\MonsterSize;
+use App\Enums\Monsters\MonsterType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,14 +12,40 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 /**
- * Reference data model for monsters, populated from Open5e API
+ * Reference data model for monsters, populated from SRD PDF parser.
  *
  * @description All data is stored in dedicated columns. Translatable fields
  * use spatie/laravel-translatable with JSON columns.
+ * Non-translatable fields (stats, enums) are stored as plain columns.
+ *
+ * @property string                    $fingerprint
+ * @property array                     $name
+ * @property MonsterType               $type
+ * @property MonsterSize               $size
+ * @property string                    $alignment
+ * @property array                     $desc
+ * @property string                    $challenge_rating
+ * @property float                     $cr
+ * @property int                       $armor_class
+ * @property int                       $hit_points
+ * @property string                    $hit_dice
+ * @property array                     $speed
+ * @property int                       $strength
+ * @property int                       $dexterity
+ * @property int                       $constitution
+ * @property int                       $intelligence
+ * @property int                       $wisdom
+ * @property int                       $charisma
+ * @property array                     $saving_throws
+ * @property array                     $traits
+ * @property array                     $actions
+ * @property array                     $legendary_actions
+ * @property array                     $reactions
+ * @property array                     $bonus_actions
  *
  * @example
- * Monster::forGameSystem(GameSystem::Dnd5e2024)->where('type', 'Dragon')->get();
- * Monster::whereTranslation('name', '%Goblin%')->orderByTranslation('name')->get();
+ * Monster::where('type', MonsterType::Dragon)->get();
+ * Monster::where('size', MonsterSize::Large)->get();
  * $monster->abilityModifier('strength');
  */
 class Monster extends Model
@@ -36,15 +63,13 @@ class Monster extends Model
         'legendary_actions',
         'reactions',
         'bonus_actions',
-        'special_abilities',
     ];
 
     protected $fillable = [
-        'slug',
+        'fingerprint',
         'name',
-        'size',
         'type',
-        'subtype',
+        'size',
         'alignment',
         'desc',
         'challenge_rating',
@@ -52,12 +77,6 @@ class Monster extends Model
         'armor_class',
         'hit_points',
         'hit_dice',
-        'traits',
-        'actions',
-        'legendary_actions',
-        'reactions',
-        'bonus_actions',
-        'special_abilities',
         'speed',
         'strength',
         'dexterity',
@@ -66,20 +85,34 @@ class Monster extends Model
         'wisdom',
         'charisma',
         'saving_throws',
-        'armor_detail',
-        'document_slug',
-        'document_title',
-        'img_url',
-        'last_synced_at',
+        'traits',
+        'actions',
+        'legendary_actions',
+        'reactions',
+        'bonus_actions',
     ];
 
     protected function casts(): array
     {
         return [
-            'speed' => 'array',
+            'type'          => MonsterType::class,
+            'size'          => MonsterSize::class,
+            'speed'         => 'array',
             'saving_throws' => 'array',
-            'cr' => 'decimal:2',
-            'last_synced_at' => 'datetime',
+            'traits'        => 'array',
+            'actions'       => 'array',
+            'legendary_actions' => 'array',
+            'reactions'     => 'array',
+            'bonus_actions' => 'array',
+            'cr'            => 'decimal:2',
+            'armor_class'   => 'integer',
+            'hit_points'    => 'integer',
+            'strength'      => 'integer',
+            'dexterity'     => 'integer',
+            'constitution'  => 'integer',
+            'intelligence'  => 'integer',
+            'wisdom'        => 'integer',
+            'charisma'      => 'integer',
         ];
     }
 
@@ -106,8 +139,23 @@ class Monster extends Model
     // Scopes
     // ---------------------------------------------------------------
 
-    public function scopeForGameSystem(Builder $query, GameSystem $system): Builder
+    public function scopeOfType(Builder $query, MonsterType $type): Builder
     {
-        return $query->whereIn('document_slug', $system->documentSlugs());
+        return $query->where('type', $type);
+    }
+
+    public function scopeOfSize(Builder $query, MonsterSize $size): Builder
+    {
+        return $query->where('size', $size);
+    }
+
+    public function scopeOfAlignment(Builder $query, string $alignment): Builder
+    {
+        return $query->where('alignment', $alignment);
+    }
+
+    public function scopeByCr(Builder $query, float $min, float $max): Builder
+    {
+        return $query->whereBetween('cr', [$min, $max]);
     }
 }

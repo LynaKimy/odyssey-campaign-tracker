@@ -13,5 +13,31 @@ return [
         'planned' => 'Planned',
         'played' => 'Played',
         'skipped' => 'Skipped'
+    ],
+    'monster' => [
+        'type' => [
+            'aberration'  => 'Aberration',
+            'beast'       => 'Beast',
+            'celestial'   => 'Celestial',
+            'construct'   => 'Construct',
+            'dragon'      => 'Dragon',
+            'elemental'   => 'Elemental',
+            'fey'         => 'Fey',
+            'fiend'       => 'Fiend',
+            'giant'       => 'Giant',
+            'humanoid'    => 'Humanoid',
+            'monstrosity' => 'Monstrosity',
+            'ooze'        => 'Ooze',
+            'plant'       => 'Plant',
+            'undead'      => 'Undead',
+        ],
+        'size' => [
+            'tiny'       => 'Tiny',
+            'small'      => 'Small',
+            'medium'     => 'Medium',
+            'large'      => 'Large',
+            'huge'       => 'Huge',
+            'gargantuan' => 'Gargantuan',
+        ],
     ]
 ];
