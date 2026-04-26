@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Monsters\MonsterSize;
+use App\Enums\Monsters\MonsterType;
 use App\Models\Monster;
 use App\Models\Spell;
 use App\Services\Open5eClient;
@@ -60,19 +62,31 @@ class SyncMonstersCommand extends Command
             $abilities = $data['ability_scores'] ?? [];
             $actions = $data['actions'] ?? [];
 
+            $typeSlug = strtolower($data['type']['name'] ?? 'unknown');
+            $sizeSlug = strtolower($data['size']['name'] ?? 'medium');
+            $alignment = $this->normalizeAlignment($data['alignment'] ?? null);
+
+            $fingerprint = $this->buildFingerprint([
+                'type'         => $typeSlug,
+                'size'         => $sizeSlug,
+                'alignment'    => $alignment,
+                'cr'           => $data['challenge_rating_decimal'] ?? '',
+                'strength'     => $abilities['strength'] ?? '',
+                'dexterity'    => $abilities['dexterity'] ?? '',
+                'constitution' => $abilities['constitution'] ?? '',
+            ]);
+
             $monster = Monster::updateOrCreate(
-                ['slug' => $data['key']],
+                ['fingerprint' => $fingerprint],
                 [
                     'name' => ['en' => $data['name']],
-                    'size' => $data['size']['name'] ?? 'Medium',
-                    'type' => $data['type']['name'] ?? 'Unknown',
-                    'subtype' => $data['subcategory'] ?? null,
-                    'alignment' => $data['alignment'] ?? null,
+                    'size' => MonsterSize::tryFrom($sizeSlug) ?? MonsterSize::Medium,
+                    'type' => MonsterType::tryFrom($typeSlug) ?? MonsterType::Unknown,
+                    'alignment' => $alignment,
                     'desc' => ! empty($data['desc']) ? ['en' => $data['desc']] : null,
                     'challenge_rating' => $data['challenge_rating_text'] ?? '0',
                     'cr' => $data['challenge_rating_decimal'] ?? null,
                     'armor_class' => $data['armor_class'] ?? 10,
-                    'armor_detail' => $data['armor_detail'] ?? null,
                     'hit_points' => $data['hit_points'] ?? 1,
                     'hit_dice' => $data['hit_dice'] ?? null,
                     'speed' => $data['speed'] ?? null,
@@ -88,11 +102,6 @@ class SyncMonstersCommand extends Command
                     'legendary_actions' => ['en' => $this->filterByType($actions, 'LEGENDARY_ACTION')],
                     'reactions' => ['en' => $this->filterByType($actions, 'REACTION')],
                     'bonus_actions' => ['en' => $this->filterByType($actions, 'BONUS_ACTION')],
-                    'special_abilities' => ['en' => $data['special_abilities'] ?? []],
-                    'document_slug' => $data['document']['key'] ?? $documentKey,
-                    'document_title' => $data['document']['display_name'] ?? null,
-                    'img_url' => $data['illustration'] ?? null,
-                    'last_synced_at' => now(),
                 ],
             );
 
@@ -154,5 +163,39 @@ class SyncMonstersCommand extends Command
         }
 
         $monster->spells()->sync($spellIds);
+    }
+
+    /**
+     * Build the fingerprint used to deduplicate monsters across sources
+     *
+     * @description Mirrors ParsePdfMonstersXMLCommand::buildFingerprint so a
+     * monster imported from the SRD PDF and from Open5e resolves to the same
+     * identity when type/size/alignment/CR/STR/DEX/CON match.
+     */
+    private function buildFingerprint(array $monster): string
+    {
+        return md5(implode('|', [
+            $monster['type'] ?? '',
+            $monster['size'] ?? '',
+            $monster['alignment'] ?? '',
+            $monster['cr'] ?? '',
+            $monster['strength'] ?? '',
+            $monster['dexterity'] ?? '',
+            $monster['constitution'] ?? '',
+        ]));
+    }
+
+    /**
+     * Normalize an Open5e alignment string to the PDF parser slug format
+     *
+     * @example "lawful good" → "lawful-good", "unaligned" → "unaligned"
+     */
+    private function normalizeAlignment(?string $value): ?string
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        return strtolower(str_replace(' ', '-', trim($value)));
     }
 }
